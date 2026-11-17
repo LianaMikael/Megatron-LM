@@ -1,6 +1,6 @@
 # Financial time-series data pipeline
 
-**Turn a parquet store of market bars into training-ready PyTorch tensors for patched time-series transformers.**
+**Turn a parquet store of market data bars into training-ready PyTorch tensors for patched time-series transformers.**
 
 `preprocessing.py` reads per-bar market data from parquet, groups rows into
 *patches* (the model's tokens), slides leak-free context windows over each
@@ -123,7 +123,7 @@ validation and test time without future data determining the scaling; `load_targ
 | `--horizons` | `1,5,15,60` | Comma-separated forecast horizons, in `--horizon-unit` units. Sets **H**. |
 | `--horizon-unit` | `time_units` | Unit for horizons: `time_units` (rows — minutes for 1-minute bars; `time-units` / `minutes` are accepted aliases) or `patches`. |
 | `--target-mode` | `point` | `point`: target the single step at *t + h*. `cumulative`: target the whole interval *t + 1 … t + h* (summed return, total volume). |
-| `--allow-overnight-targets` / `--no-allow-overnight-targets` | allow | Allowed: target intervals may cross the session close (cumulative returns then include the close-to-open move). Disallowed: targets ending on another trading day are stored as `NaN` (masked in the loss); every horizon must then fit inside one session. |
+| `--allow-overnight-targets` / `--no-allow-overnight-targets` | allow | Allowed: target intervals may cross the session close (cumulative returns then include the close-to-open move). Disallowed: targets ending on another trading day are stored as `NaN` (masked in the loss); every horizon must then fit inside one session (day). |
 | `--within-day-context` | off | Reject windows whose *context* crosses a day boundary (targets may still reach into later days). |
 | `--split-fracs` | `0.6,0.2,0.2` | Train/val/test fractions **by date**, summing to 1. Splits are contiguous in time: train earliest, test latest. |
 | `--embargo-days` | `2` | Trading days dropped from the end of the training split to create a gap before validation. Applies only to the train/validation boundary; validation and test remain adjacent. |
